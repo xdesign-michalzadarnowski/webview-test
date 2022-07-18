@@ -1,435 +1,374 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Web Bridge Invocation</title>
-		<meta
-			http-equiv="Content-Security-Policy"
-			content="default-src 'self' https: wss: data: 'unsafe-inline' 'unsafe-eval' blob: fanduel-webview://analytics/log-event" />
-		<style>
-			div {
-				float: left;
-				padding: 10px 20px;
-			}
+  <head>
+    <title>Web Bridge Invocation</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' https: wss: data: 'unsafe-inline' 'unsafe-eval' blob: fanduel-webview://analytics/log-event"
+    />
+    <style>
+      div {
+        float: left;
+        padding: 10px 20px;
+      }
 
-			.bordered-panel {
-				float: left;
-				display: flex;
-				flex-flow: column wrap;
-				border: 2px solid grey;
-				border-radius: 20px;
-				margin: 5px;
-			}
+      .bordered-panel {
+        float: left;
+        display: flex;
+        flex-flow: column wrap;
+        border: 2px solid grey;
+        border-radius: 20px;
+        margin: 5px;
+      }
 
-			.logging {
-				margin: 5px;
-			}
+      .logging {
+        margin: 5px;
+      }
 
-			.event-messaging {
-				float: left;
-				display: inline-block;
-				margin: 5px;
-			}
+      .event-messaging {
+        float: left;
+        display: inline-block;
+        margin: 5px;
+      }
 
-			button {
-				float: left;
-				padding: 10px;
-				margin: 5px;
-			}
+      button {
+        float: left;
+        padding: 10px;
+        margin: 5px;
+      }
 
-			label {
-				padding: 10px;
-			}
+      label {
+        padding: 10px;
+      }
 
-			input {
-				margin: 10px 5px;
-			}
-		</style>
-	</head>
-	<body>
-		<script type="text/javascript">
-			function sendPost() {
-				var output = document.getElementById("venmo-output");
-				output.innerHTML = "Sending POST...";
+      input {
+        margin: 10px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      function sendPost() {
+        var output = document.getElementById("venmo-output");
+        output.innerHTML = "Sending POST...";
 
-				var url = "https://reqbin.com/echo/post/json";
-				var xhr = new XMLHttpRequest();
-				xhr.open("POST", url);
-				xhr.setRequestHeader("Accept", "application/json");
-				xhr.setRequestHeader("Content-Type", "application/json");
+        var url = "https://reqbin.com/echo/post/json";
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
 
-				xhr.onreadystatechange = function () {
-					output.innerHTML =
-						"readyState = " +
-						xhr.readyState +
-						"\nstatus = " +
-						xhr.status +
-						"\n\n" +
-						xhr.responseText;
-				};
+        xhr.onreadystatechange = function () {
+          output.innerHTML =
+            "readyState = " +
+            xhr.readyState +
+            "\nstatus = " +
+            xhr.status +
+            "\n\n" +
+            xhr.responseText;
+        };
 
-				var data = `{"Foo":"Bar"}`;
+        var data = `{"Foo":"Bar"}`;
 
-				xhr.send(data);
-			}
+        xhr.send(data);
+      }
 
-			function sendPostAfterDelay(seconds) {
-				var output = document.getElementById("venmo-output");
-				output.innerHTML = "Delaying " + seconds + " seconds...";
-				setTimeout(sendPost, seconds * 1000);
-				window.location.href = "https://venmo.com/";
-			}
+      function sendPostAfterDelay(seconds) {
+        var output = document.getElementById("venmo-output");
+        output.innerHTML = "Delaying " + seconds + " seconds...";
+        setTimeout(sendPost, seconds * 1000);
+        window.location.href = "https://venmo.com/";
+      }
 
-			function launchIdScan(doc, face) {
-				var token = document.getElementById("id-scan-token").value;
-				FD_AW_Wrapper.launchIdScan(token, doc, face);
-			}
+      function launchIdScan(doc, face) {
+        var token = document.getElementById("id-scan-token").value;
+        FD_AW_Wrapper.launchIdScan(token, doc, face);
+      }
 
-			function biometricPromoteEventClickWithAlertData(namespace) {
-				var credentials = {
-					email: "user@fanduel.com",
-					password: "mypassword",
-				};
-				var alertData = {
-					title: "My title",
-					message: "my message",
-					okButtonText: "yeah, why not",
-					cancelButtonText: "... nah!",
-				};
-				FD_AW_NativeBiometrics.promoteAndWriteData(
-					JSON.stringify(credentials),
-					namespace,
-					JSON.stringify(alertData)
-				);
-			}
+      function biometricPromoteEventClickWithAlertData(namespace) {
+        var credentials = {
+          email: "user@fanduel.com",
+          password: "mypassword",
+        };
+        var alertData = {
+          title: "My title",
+          message: "my message",
+          okButtonText: "yeah, why not",
+          cancelButtonText: "... nah!",
+        };
+        FD_AW_NativeBiometrics.promoteAndWriteData(
+          JSON.stringify(credentials),
+          namespace,
+          JSON.stringify(alertData)
+        );
+      }
 
-			function biometricPromoteEventClickWithoutAlertData(namespace) {
-				var credentials = {
-					email: "user@fanduel.com",
-					password: "mypassword",
-				};
-				FD_AW_NativeBiometrics.promoteAndWriteData(
-					JSON.stringify(credentials),
-					namespace
-				);
-			}
+      function biometricPromoteEventClickWithoutAlertData(namespace) {
+        var credentials = {
+          email: "user@fanduel.com",
+          password: "mypassword",
+        };
+        FD_AW_NativeBiometrics.promoteAndWriteData(
+          JSON.stringify(credentials),
+          namespace
+        );
+      }
 
-			function promoteBiometricsThenLoginFlowComplete(namespace) {
-				var credentials = {
-					email: "user@fanduel.com",
-					password: "mypassword",
-				};
-				FD_AW_Wrapper.internalNavigation("login");
-				FD_AW_NativeBiometrics.promoteAndWriteData(
-					JSON.stringify(credentials),
-					namespace
-				);
-				FD_AW_Wrapper.internalNavigation("account");
-			}
+      function promoteBiometricsThenLoginFlowComplete(namespace) {
+        var credentials = {
+          email: "user@fanduel.com",
+          password: "mypassword",
+        };
+        FD_AW_Wrapper.internalNavigation("login");
+        FD_AW_NativeBiometrics.promoteAndWriteData(
+          JSON.stringify(credentials),
+          namespace
+        );
+        FD_AW_Wrapper.internalNavigation("account");
+      }
 
-			FD_AW_Wrapper.idScanSuccess = function (result) {
-				document.getElementById("id-scan-output").innerHTML =
-					JSON.stringify(result, undefined, 2);
-			};
+      FD_AW_Wrapper.idScanSuccess = function (result) {
+        document.getElementById("id-scan-output").innerHTML = JSON.stringify(
+          result,
+          undefined,
+          2
+        );
+      };
 
-			FD_AW_Wrapper.idScanFailed = function (failure, message) {
-				document.getElementById("id-scan-output").innerHTML =
-					JSON.stringify([failure, message], undefined, 2);
-			};
+      FD_AW_Wrapper.idScanFailed = function (failure, message) {
+        document.getElementById("id-scan-output").innerHTML = JSON.stringify(
+          [failure, message],
+          undefined,
+          2
+        );
+      };
 
-			var FD_AW_Biometrics = {
-				checkAvailabilityResponse: function (result) {
-					document.getElementById("biometrics-output").innerHTML =
-						JSON.stringify(result);
-				},
+      var FD_AW_Biometrics = {
+        checkAvailabilityResponse: function (result) {
+          document.getElementById("biometrics-output").innerHTML =
+            JSON.stringify(result);
+        },
 
-				readDataResponse: function (result) {
-					document.getElementById("biometrics-output").innerHTML =
-						"readDataResponse: " + result;
-				},
+        readDataResponse: function (result) {
+          document.getElementById("biometrics-output").innerHTML =
+            "readDataResponse: " + result;
+        },
 
-				writeDataResponse: function (result) {
-					document.getElementById("biometrics-output").innerHTML =
-						"writeDataResponse: " + result;
-				},
+        writeDataResponse: function (result) {
+          document.getElementById("biometrics-output").innerHTML =
+            "writeDataResponse: " + result;
+        },
 
-				clearDataResponse: function (result) {
-					document.getElementById("biometrics-output").innerHTML =
-						"clearDataResponse: " + result;
-				},
+        clearDataResponse: function (result) {
+          document.getElementById("biometrics-output").innerHTML =
+            "clearDataResponse: " + result;
+        },
 
-				promoteAndWriteDataResponse: function (result) {
-					document.getElementById("biometrics-output").innerHTML =
-						"promoteAndWriteDataResponse: " + result;
-				},
-			};
+        promoteAndWriteDataResponse: function (result) {
+          document.getElementById("biometrics-output").innerHTML =
+            "promoteAndWriteDataResponse: " + result;
+        },
+      };
 
-			TEST_PLUGIN.testCallback = function (result) {
-				document.getElementById("test-plugin-output").innerHTML =
-					result;
-			};
+      TEST_PLUGIN.testCallback = function (result) {
+        document.getElementById("test-plugin-output").innerHTML = result;
+      };
 
-			function sendTestPluginMethod() {
-				var text = document.getElementById("test-plugin-input").value;
-				TEST_PLUGIN.testMethod(text);
-			}
+      function sendTestPluginMethod() {
+        var text = document.getElementById("test-plugin-input").value;
+        TEST_PLUGIN.testMethod(text);
+      }
 
-			function testURLSchemeBridge(url) {
-				var output = document.getElementById(
-					"url-scheme-bridge-output"
-				);
-				output.innerHTML = "Sending GET...";
+      function testURLSchemeBridge(url) {
+				console.log('asdfasdfasdfsd')
+        window.location.href = url;
+      }
+    </script>
+    <h1>Web->Wrapper protocols</h1>
+    <p>
+      Press any of the following to invoke native protocols for webview
+      bridging:
+    </p>
 
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", url);
-				xhr.setRequestHeader("Accept", "text/plain");
-				xhr.setRequestHeader("Content-Type", "text/plain");
+    <div id="event_link" class="event-messaging"></div>
+    <br />
+    <div>
+      <div class="bordered-panel">
+        <label>Venmo</label>
+        <button onclick="sendPost()">Send POST</button>
+        <button onclick="sendPostAfterDelay(5)">Send POST after 5s</button>
+        <button onclick="sendPostAfterDelay(10)">Send POST after 10s</button>
+        <button onclick="sendPostAfterDelay(30)">Send POST after 30s</button>
+        <button onclick="sendPostAfterDelay(60)">Send POST after 1m</button>
+        <button onclick="sendPostAfterDelay(120)">Send POST after 2m</button>
+        <pre id="venmo-output"></pre>
+      </div>
+      <div class="bordered-panel">
+        <label>ThreatMetrix</label>
+        <button
+          onclick="FD_AW_Wrapper.obtainTmxProfile('aBcDeFgHiJkLmNoPqRsTuVwXyZ123456')"
+        >
+          Obtain TMX Verification (Successful)
+        </button>
+        <button onclick="FD_AW_Wrapper.obtainTmxProfile('12345')">
+          Obtain TMX Verification (Unsuccessful)
+        </button>
+      </div>
+      <div class="bordered-panel">
+        <label>ID Scan</label>
+        <!--    Set the value on the input below if you want to hardcode a token temporarily    -->
+        <input
+          type="text"
+          id="id-scan-token"
+          placeholder="ID Scan SDK token"
+          value=""
+        />
+        <button onclick="launchIdScan('DRIVING_LICENCE', 'NONE')">
+          Launch for driver's license
+        </button>
+        <button onclick="launchIdScan('NATIONAL_IDENTITY_CARD', 'NONE')">
+          Launch for national ID card
+        </button>
+        <button onclick="launchIdScan('DOCTORS_NOTE', 'NONE')">
+          Launch for invalid ID (Doctor's Note!)
+        </button>
+        <pre id="id-scan-output"></pre>
+      </div>
+      <div class="bordered-panel">
+        <label>IWA Bridge Methods</label>
+        <label>sessionChanged</label>
+        <button
+          onclick="FD_AW_Wrapper.sessionChanged(JSON.stringify({ id: '123', session_id: '12345678', login_token: 'awe54drtfyuyg5e645e', date_created: '2021-07-28T08:06:27Z' }))"
+        >
+          Send sessionChanged
+        </button>
+        <button
+          onclick="FD_AW_Wrapper.sessionChanged(JSON.stringify({ id: null, session_id: null, login_token: null, date_created: null }))"
+        >
+          Send sessionChanged (Null optionals)
+        </button>
+        <button onclick="FD_AW_Wrapper.sessionChanged(undefined)">
+          Send sessionChanged (Undefined)
+        </button>
 
-				xhr.onreadystatechange = function () {
-					var readyState;
-					switch (xhr.readyState) {
-						case 0:
-							readyState = "UNSENT";
-							break;
-						case 1:
-							readyState = "OPENED";
-							break;
-						case 2:
-							readyState = "HEADERS_RECEIVED";
-							break;
-						case 3:
-							readyState = "LOADING";
-							break;
-						case 4:
-							readyState = "DONE";
-							break;
-						default:
-							readyState = "UNKNOWN";
-					}
-					output.innerHTML =
-						"readyState = " +
-						readyState +
-						"\nstatus = " +
-						xhr.status +
-						"\n\n" +
-						xhr.responseText;
-				};
+        <label>setUserData</label>
+        <button
+          onclick="FD_AW_Wrapper.setUserData(JSON.stringify({ userId: '123', username: 'somebody', first_name: 'Some', last_name: 'Body', email: 'somebody@somewhere.com', balance: 0.0, hasDeposited: false }))"
+        >
+          Send setUserData
+        </button>
+        <button
+          onclick="FD_AW_Wrapper.setUserData(JSON.stringify({ userId: '123', username: 'somebody', first_name: null, last_name: null, email: null, balance: null, hasDeposited: null }))"
+        >
+          Send setUserData (Null optionals)
+        </button>
 
-				xhr.send();
-			}
-		</script>
-		<h1>Web->Wrapper protocols</h1>
-		<p>
-			Press any of the following to invoke native protocols for webview
-			bridging:
-		</p>
+        <label>logEvent</label>
+        <button
+          onclick="FD_AW_Wrapper.logEvent('someEvent', JSON.stringify({ data: { key: 'value' }}), 'someVendor')"
+        >
+          Send logEvent
+        </button>
+        <button onclick="FD_AW_Wrapper.logEvent('someEvent', null, null)">
+          Send logEvent (Null Optionals)
+        </button>
 
-		<div id="event_link" class="event-messaging"></div>
-		<br />
-		<div>
-			<div class="bordered-panel">
-				<label>Venmo</label>
-				<button onclick="sendPost()">Send POST</button>
-				<button onclick="sendPostAfterDelay(5)">
-					Send POST after 5s
-				</button>
-				<button onclick="sendPostAfterDelay(10)">
-					Send POST after 10s
-				</button>
-				<button onclick="sendPostAfterDelay(30)">
-					Send POST after 30s
-				</button>
-				<button onclick="sendPostAfterDelay(60)">
-					Send POST after 1m
-				</button>
-				<button onclick="sendPostAfterDelay(120)">
-					Send POST after 2m
-				</button>
-				<pre id="venmo-output"></pre>
-			</div>
-			<div class="bordered-panel">
-				<label>ThreatMetrix</label>
-				<button
-					onclick="FD_AW_Wrapper.obtainTmxProfile('aBcDeFgHiJkLmNoPqRsTuVwXyZ123456')"
-				>
-					Obtain TMX Verification (Successful)
-				</button>
-				<button onclick="FD_AW_Wrapper.obtainTmxProfile('12345')">
-					Obtain TMX Verification (Unsuccessful)
-				</button>
-			</div>
-			<div class="bordered-panel">
-				<label>ID Scan</label>
-				<!--    Set the value on the input below if you want to hardcode a token temporarily    -->
-				<input
-					type="text"
-					id="id-scan-token"
-					placeholder="ID Scan SDK token"
-					value=""
-				/>
-				<button onclick="launchIdScan('DRIVING_LICENCE', 'NONE')">
-					Launch for driver's license
-				</button>
-				<button
-					onclick="launchIdScan('NATIONAL_IDENTITY_CARD', 'NONE')"
-				>
-					Launch for national ID card
-				</button>
-				<button onclick="launchIdScan('DOCTORS_NOTE', 'NONE')">
-					Launch for invalid ID (Doctor's Note!)
-				</button>
-				<pre id="id-scan-output"></pre>
-			</div>
-			<div class="bordered-panel">
-				<label>IWA Bridge Methods</label>
-				<label>sessionChanged</label>
-				<button
-					onclick="FD_AW_Wrapper.sessionChanged(JSON.stringify({ id: '123', session_id: '12345678', login_token: 'awe54drtfyuyg5e645e', date_created: '2021-07-28T08:06:27Z' }))"
-				>
-					Send sessionChanged
-				</button>
-				<button
-					onclick="FD_AW_Wrapper.sessionChanged(JSON.stringify({ id: null, session_id: null, login_token: null, date_created: null }))"
-				>
-					Send sessionChanged (Null optionals)
-				</button>
-				<button onclick="FD_AW_Wrapper.sessionChanged(undefined)">
-					Send sessionChanged (Undefined)
-				</button>
-
-				<label>setUserData</label>
-				<button
-					onclick="FD_AW_Wrapper.setUserData(JSON.stringify({ userId: '123', username: 'somebody', first_name: 'Some', last_name: 'Body', email: 'somebody@somewhere.com', balance: 0.0, hasDeposited: false }))"
-				>
-					Send setUserData
-				</button>
-				<button
-					onclick="FD_AW_Wrapper.setUserData(JSON.stringify({ userId: '123', username: 'somebody', first_name: null, last_name: null, email: null, balance: null, hasDeposited: null }))"
-				>
-					Send setUserData (Null optionals)
-				</button>
-
-				<label>logEvent</label>
-				<button
-					onclick="FD_AW_Wrapper.logEvent('someEvent', JSON.stringify({ data: { key: 'value' }}), 'someVendor')"
-				>
-					Send logEvent
-				</button>
-				<button
-					onclick="FD_AW_Wrapper.logEvent('someEvent', null, null)"
-				>
-					Send logEvent (Null Optionals)
-				</button>
-
-				<label>internalNavigation</label>
-				<button onclick="FD_AW_Wrapper.internalNavigation('login')">
-					Start Login Flow
-				</button>
-				<button onclick="FD_AW_Wrapper.internalNavigation('account')">
-					Complete Login Flow
-				</button>
-			</div>
-			<div class="bordered-panel">
-				<label>Biometrics</label>
-				<button onclick="FD_AW_NativeBiometrics.checkAvailability()">
-					Check Availability
-				</button>
-				<button onclick="FD_AW_NativeBiometrics.readData()">
-					Read data
-				</button>
-				<button onclick="FD_AW_NativeBiometrics.writeData('TEST')">
-					Write data
-				</button>
-				<button onclick="FD_AW_NativeBiometrics.clearData()">
-					Clear data
-				</button>
-				<button onclick="biometricPromoteEventClickWithAlertData()">
-					Promote (with alertData)
-				</button>
-				<button onclick="biometricPromoteEventClickWithoutAlertData()">
-					Promote (without alertData)
-				</button>
-				<button onclick="promoteBiometricsThenLoginFlowComplete()">
-					Promote and login flow complete
-				</button>
-			</div>
-			<div class="bordered-panel">
-				<label>Biometrics (namespaced)</label>
-				<button
-					onclick="FD_AW_NativeBiometrics.checkAvailability('NAMESPACE')"
-				>
-					Check Availability
-				</button>
-				<button onclick="FD_AW_NativeBiometrics.readData('NAMESPACE')">
-					Read data
-				</button>
-				<button
-					onclick="FD_AW_NativeBiometrics.writeData('TEST', 'NAMESPACE')"
-				>
-					Write data
-				</button>
-				<button onclick="FD_AW_NativeBiometrics.clearData('NAMESPACE')">
-					Clear data
-				</button>
-				<button
-					onclick="biometricPromoteEventClickWithAlertData('NAMESPACE')"
-				>
-					Promote (with alertData)
-				</button>
-				<button
-					onclick="biometricPromoteEventClickWithoutAlertData('NAMESPACE')"
-				>
-					Promote (without alertData)
-				</button>
-				<button
-					onclick="promoteBiometricsThenLoginFlowComplete('NAMESPACE')"
-				>
-					Promote and login flow complete
-				</button>
-			</div>
-			<div class="bordered-panel">
-				<label>Biometrics Response</label>
-				<pre id="biometrics-output"></pre>
-			</div>
-			<div class="bordered-panel">
-				<label>Test Plugin</label>
-				<input
-					type="text"
-					id="test-plugin-input"
-					placeholder="Text to send"
-					value=""
-				/>
-				<button onclick="sendTestPluginMethod();">
-					Invoke Test Method
-				</button>
-				<pre id="test-plugin-output"></pre>
-			</div>
-			<div class="bordered-panel">
-				<label>URL Scheme Bridge</label>
-				<button
-					onclick="testURLSchemeBridge('fanduel-webview://analytics/log-event?eventName=event%20name&data=%7B%22someData%22%3A%22some%20data%22%2C%22name%22%3A%22John%20Doe%22%7D&vendorTag=VENDOR');"
-				>
-					Valid Log Event
-				</button>
-				<button
-					onclick="testURLSchemeBridge('fanduel-webview://analytics/log-event?eventName=event%20name&data=scott%20is%20the%20best&vendorTag=VENDOR');"
-				>
-					Invalid Log Event
-				</button>
-				<pre id="url-scheme-bridge-output"></pre>
-			</div>
-			<div class="bordered-panel">
-				<label>Navigation</label>
-				<a href="fanduel-webview://close">Close</a>
-			</div>
-			<div class="bordered-panel">
-				<label>Download File</label>
-				<a
-					href="https://www.fincen.gov/sites/default/files/shared/CTR-CPamphlet.pdf"
-					>CTR-CPamphlet.pdf</a
-				><br />
-			</div>
-		</div>
-		<br /><br />
-		<div id="messaging" class="logging"></div>
-	</body>
+        <label>internalNavigation</label>
+        <button onclick="FD_AW_Wrapper.internalNavigation('login')">
+          Start Login Flow
+        </button>
+        <button onclick="FD_AW_Wrapper.internalNavigation('account')">
+          Complete Login Flow
+        </button>
+      </div>
+      <div class="bordered-panel">
+        <label>Biometrics</label>
+        <button onclick="FD_AW_NativeBiometrics.checkAvailability()">
+          Check Availability
+        </button>
+        <button onclick="FD_AW_NativeBiometrics.readData()">Read data</button>
+        <button onclick="FD_AW_NativeBiometrics.writeData('TEST')">
+          Write data
+        </button>
+        <button onclick="FD_AW_NativeBiometrics.clearData()">Clear data</button>
+        <button onclick="biometricPromoteEventClickWithAlertData()">
+          Promote (with alertData)
+        </button>
+        <button onclick="biometricPromoteEventClickWithoutAlertData()">
+          Promote (without alertData)
+        </button>
+        <button onclick="promoteBiometricsThenLoginFlowComplete()">
+          Promote and login flow complete
+        </button>
+      </div>
+      <div class="bordered-panel">
+        <label>Biometrics (namespaced)</label>
+        <button onclick="FD_AW_NativeBiometrics.checkAvailability('NAMESPACE')">
+          Check Availability
+        </button>
+        <button onclick="FD_AW_NativeBiometrics.readData('NAMESPACE')">
+          Read data
+        </button>
+        <button onclick="FD_AW_NativeBiometrics.writeData('TEST', 'NAMESPACE')">
+          Write data
+        </button>
+        <button onclick="FD_AW_NativeBiometrics.clearData('NAMESPACE')">
+          Clear data
+        </button>
+        <button onclick="biometricPromoteEventClickWithAlertData('NAMESPACE')">
+          Promote (with alertData)
+        </button>
+        <button
+          onclick="biometricPromoteEventClickWithoutAlertData('NAMESPACE')"
+        >
+          Promote (without alertData)
+        </button>
+        <button onclick="promoteBiometricsThenLoginFlowComplete('NAMESPACE')">
+          Promote and login flow complete
+        </button>
+      </div>
+      <div class="bordered-panel">
+        <label>Biometrics Response</label>
+        <pre id="biometrics-output"></pre>
+      </div>
+      <div class="bordered-panel">
+        <label>Test Plugin</label>
+        <input
+          type="text"
+          id="test-plugin-input"
+          placeholder="Text to send"
+          value=""
+        />
+        <button onclick="sendTestPluginMethod();">Invoke Test Method</button>
+        <pre id="test-plugin-output"></pre>
+      </div>
+      <div class="bordered-panel">
+        <label>URL Scheme Bridge</label>
+        <button
+          onclick="testURLSchemeBridge('fanduel-webview://analytics/log-event?eventName=event%20name&data=%7B%22someData%22%3A%22some%20data%22%2C%22name%22%3A%22John%20Doe%22%7D&vendorTag=VENDOR');"
+        >
+          Valid Log Event
+        </button>
+        <button
+          onclick="testURLSchemeBridge('fanduel-webview://analytics/log-event?eventName=event%20name&data=scott%20is%20the%20best&vendorTag=VENDOR');"
+        >
+          Invalid Log Event
+        </button>
+        <pre id="url-scheme-bridge-output"></pre>
+      </div>
+      <div class="bordered-panel">
+        <label>Navigation</label>
+        <a href="fanduel-webview://close">Close</a>
+      </div>
+      <div class="bordered-panel">
+        <label>Download File</label>
+        <a
+          href="https://www.fincen.gov/sites/default/files/shared/CTR-CPamphlet.pdf"
+          >CTR-CPamphlet.pdf</a
+        ><br />
+      </div>
+    </div>
+    <br /><br />
+    <div id="messaging" class="logging"></div>
+  </body>
 </html>
